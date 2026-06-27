@@ -5,7 +5,8 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/cli-notifier)](https://pypi.org/project/cli-notifier/)
 [![License](https://img.shields.io/pypi/l/cli-notifier)](LICENSE)
 
-# 📡 echo-notifier
+#echo-notifier
+![Uploading ECHO-git.png…]()
 
 *Your AI agents scream into my void. I ping your phone.*
 
