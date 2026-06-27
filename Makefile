@@ -1,4 +1,4 @@
-.PHONY: install server init setup test
+.PHONY: install init setup test
 
 install: ## Install echo-notifier via pipx
 	pipx install .
@@ -11,6 +11,3 @@ setup: ## Setup Telegram bot
 
 test: ## Jalankan semua test
 	python -m unittest tests/test_echo.py -v
-
-server: ## Start Expo backend (opsional)
-	cd backend && python3 main.py

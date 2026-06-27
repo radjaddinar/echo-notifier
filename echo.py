@@ -2,13 +2,12 @@
 """echo-notifier — push notification on command completion.
 
 Mendukung:
-  - Telegram (default) — langsung via Bot API, gak perlu server
-  - Expo (via backend/main.py) — kalau masih perlu
+  - Telegram — langsung via Bot API, gak perlu server
 
 Usage:
   echon <command>                          Run a command, notify on completion
   echon --message "text" [--status fail]   Send direct notification
-  echon --setup                            Setup notifier (pilih channel)
+  echon --setup                            Setup notifier
   echon --init                             Setup global AI agent config
   echon --uninstall                        Hapus semua konfigurasi
   echon --version                          Tampilkan versi
@@ -25,7 +24,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 
-__version__ = "1.0.2"
+__version__ = "2.0.0"
 
 # Platform-aware paths
 if platform.system() == "Windows":
@@ -35,13 +34,13 @@ else:
     CONFIG_DIR = os.path.expanduser("~/.config/echo")
 CONFIG_PATH = os.path.join(CONFIG_DIR, "config.json")
 
-# Default bot — user tinggal chat @radjaCLInotifierBOT
+# Default bot — user tinggal chat @ECHOclibot
 # Bisa dioverride via env var: ECHO_BOT_TOKEN
 DEFAULT_BOT_TOKEN = os.environ.get(
     "ECHO_BOT_TOKEN",
-    "8708933447:AAEH_Jt2AtoDGtQZnWTlsGBLDowmuI1_HgU",
+    "8951600952:AAGaHwa5_LvMpgNDHe-KMBQ_AonK_GwuBPo",
 )
-DEFAULT_BOT_USERNAME = "radjaCLInotifierBOT"
+DEFAULT_BOT_USERNAME = "ECHOclibot"
 
 TELEGRAM_API = "https://api.telegram.org/bot{token}/sendMessage"
 TELEGRAM_UPDATES = "https://api.telegram.org/bot{token}/getUpdates"
@@ -93,8 +92,8 @@ def load_config() -> dict:
         print("✓ Config migrated from cli-notifier → echo")
 
     if not os.path.exists(CONFIG_PATH):
-        channel = _prompt_channel()
-        config = setup_telegram() if channel == "telegram" else setup_expo()
+        _prompt_channel()
+        config = setup_telegram()
         os.makedirs(CONFIG_DIR, exist_ok=True)
         with open(CONFIG_PATH, "w") as f:
             json.dump(config, f, indent=2)
@@ -107,11 +106,8 @@ def _prompt_channel() -> str:
     print("=" * 50)
     print("📡  echo-notifier — First Time Setup")
     print("=" * 50)
-    print("\nPilih channel notifikasi:")
-    print("  1. Telegram (via Bot API — gak perlu server, paling gampang)")
-    print("  2. Expo (via backend sendiri — perlu jalankan server)\n")
-    choice = input("Pilih [1/2] (default 1): ").strip() or "1"
-    return "telegram" if choice == "1" else "expo"
+    print("\nChannel notifikasi: Telegram (via Bot API — gak perlu server)\n")
+    return "telegram"
 
 
 # ── Setup ─────────────────────────────────────────────────────────────────
@@ -133,16 +129,17 @@ def setup_telegram() -> dict:
             "bikin sendiri? (ketik s) [Y/n]: "
         ).strip().lower()
 
-    if choice == "n" and can_use_default:
+    if choice in ("", "y") and can_use_default:
         token = DEFAULT_BOT_TOKEN
         print(f"\n✅ Pake bot: @{DEFAULT_BOT_USERNAME}\n")
     else:
         token = _prompt_custom_bot()
 
-    chat_id = _resolve_chat_id(token)
+    username = DEFAULT_BOT_USERNAME if choice in ("", "y") else ""
+    chat_id = _resolve_chat_id(token, username)
     if chat_id:
         send_telegram(token, chat_id, "✅ echo-notifier berhasil terhubung!")
-    return {"channel": "telegram", "bot_token": token, "chat_id": chat_id, "user_id": "dinar_01"}
+    return {"channel": "telegram", "bot_token": token, "chat_id": chat_id}
 
 
 def _prompt_custom_bot() -> str:
@@ -153,8 +150,11 @@ def _prompt_custom_bot() -> str:
     return input("Masukkan Bot Token: ").strip()
 
 
-def _resolve_chat_id(token: str) -> str:
+def _resolve_chat_id(token: str, bot_username: str = "") -> str:
     """Coba ambil chat_id otomatis dari getUpdates, fallback ke manual."""
+    if not bot_username:
+        bot_username = _resolve_bot_username(token)
+
     for attempt in range(2):
         try:
             url = TELEGRAM_UPDATES.format(token=token)
@@ -169,54 +169,35 @@ def _resolve_chat_id(token: str) -> str:
             pass
 
         if attempt == 0:
-            print(f"\n⚠  Kirim /start ke @{DEFAULT_BOT_USERNAME} dulu,")
+            print(f"\n⚠  Kirim /start ke @{bot_username} dulu,")
             print("   lalu tekan Enter.")
             input("   (Tekan Enter setelah kirim /start)... ")
 
     return input("Chat ID (gak ketemu otomatis, isi manual): ").strip()
 
 
-def setup_expo() -> dict:
-    """Interaktif setup Expo (via backend)."""
-    uid = input("User ID (default: dinar_01): ").strip() or "dinar_01"
-    url = (
-        input("Backend URL (default: http://192.168.1.11:8000/trigger-notification): ").strip()
-        or "http://192.168.1.11:8000/trigger-notification"
-    )
-    return {"channel": "expo", "user_id": uid, "backend_url": url}
+def _resolve_bot_username(token: str) -> str:
+    """Cari username bot dari API, fallback ke DEFAULT_BOT_USERNAME."""
+    try:
+        url = f"https://api.telegram.org/bot{token}/getMe"
+        ctx = _get_ssl_context()
+        with urllib.request.urlopen(url, timeout=10, context=ctx) as resp:
+            data = json.loads(resp.read())
+        if data.get("ok") and data["result"].get("username"):
+            return data["result"]["username"]
+    except Exception:
+        pass
+    return DEFAULT_BOT_USERNAME
 
 
 # ── Send ──────────────────────────────────────────────────────────────────
 
 
 def send_notification(config: dict, agent: str, status: str, summary: str) -> bool:
-    """Kirim notifikasi berdasarkan channel yang dipilih."""
+    """Kirim notifikasi via Telegram."""
     icon = "✅" if status == "success" else "❌"
     text = f"{icon} {agent} — {summary}"
-
-    if config.get("channel") == "telegram":
-        return send_telegram(config["bot_token"], config["chat_id"], text)
-    title = f"{agent} — {status.title()}"
-    return send_expo(config, title, summary)
-
-
-def send_expo(config: dict, title: str, message: str) -> bool:
-    """Kirim via Expo backend."""
-    payload = json.dumps({
-        "user_id": config["user_id"], "title": title, "message": message,
-    }).encode()
-    try:
-        req = urllib.request.Request(
-            config["backend_url"], data=payload,
-            headers={"Content-Type": "application/json"},
-        )
-        with urllib.request.urlopen(req, timeout=10):
-            pass
-        print("✓ Notification sent (Expo)", flush=True)
-        return True
-    except Exception as e:
-        print(f"✗ Gagal kirim notifikasi: {e}", flush=True)
-        return False
+    return send_telegram(config["bot_token"], config["chat_id"], text)
 
 
 def send_telegram(token: str, chat_id: str, text: str) -> bool:
@@ -392,7 +373,7 @@ def main() -> None:
         if cmd == "--setup":
             if os.path.exists(CONFIG_PATH):
                 os.remove(CONFIG_PATH)
-            main()
+            load_config()
             return
         if cmd == "--init":
             cmd_setup_ai_global()

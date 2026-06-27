@@ -68,13 +68,12 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(eco.load_config(), config)
 
     def test_config_structure(self):
-        r = {"channel": "telegram", "bot_token": "t", "chat_id": "1", "user_id": "dinar_01"}
+        r = {"channel": "telegram", "bot_token": "t", "chat_id": "1"}
         self.assertIn("bot_token", r)
         self.assertIn("chat_id", r)
 
-    def test_expo_config_structure(self):
-        r = {"channel": "expo", "user_id": "u", "backend_url": "http://local.host/n"}
-        self.assertEqual(r["channel"], "expo")
+    def test_telegram_config_structure(self):
+        r = {"channel": "telegram", "bot_token": "t", "chat_id": "1"}
 
 
 class TestPlatformPaths(unittest.TestCase):

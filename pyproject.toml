@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cli-notifier"
-version = "1.0.2"
+version = "2.0.0"
 description = "echo-notifier — push notifikasi ke HP via Telegram saat AI agent selesai task"
 readme = "README.md"
 license = "MIT"
@@ -22,6 +22,9 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Utilities",
+]
+dependencies = [
+    "certifi>=2024.0.0",
 ]
 
 [project.scripts]

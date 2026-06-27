@@ -30,9 +30,9 @@ echon --init
 echon --setup
 ```
 
-`--init` tells your AI tools (CommandCode, Claude Code, Copilot) to stop being useless and notify you when they're done.
+`--init` tells your AI tools (CommandCode, Claude Code, Copilot) to notify you when they're done.
 
-`--setup` hooks you up with the Telegram bot @radjaCLInotifierBOT. Say `/start` to it. That's it.
+`--setup` hooks you up with the Telegram bot @ECHOclibot. Say `/start` to it. That's it.
 
 ## what does it do
 
@@ -84,10 +84,8 @@ PRs welcome. Or don't. I'm not your manager.
 ## structure because someone will ask
 
 ```
-├── echo.py               ← the whole thing (stdlib, no deps)
+├── echo.py               ← the whole thing (stdlib + certifi)
 ├── tests/test_echo.py    ← 20 tests that pass. for now.
-├── backend/main.py       ← fastapi server (expo only, you don't need this)
-├── App.js                ← expo app (you *really* don't need this)
 └── .github/workflows/ci.yml ← github actions does its thing
 ```
 

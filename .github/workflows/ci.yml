@@ -30,7 +30,7 @@ jobs:
       - name: Lint
         run: |
           pip install pycodestyle
-          pycodestyle notify_cli.py --max-line-length=100
+          pycodestyle echo.py --max-line-length=100
 
       - name: Run tests
         run: python -m unittest tests/test_echo.py -v

@@ -1,3 +1,3 @@
-# Expo HAS CHANGED
+# echo-notifier — AGENTS.md
 
-Read the exact versioned docs at https://docs.expo.dev/versions/v54.0.0/ before writing any code.
+CLI notifikasi Telegram untuk AI agents. Lihat README.md untuk dokumentasi lengkap.
