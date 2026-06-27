@@ -1,6 +1,7 @@
 <!-- markdownlint-disable MD041 -->
-![image alt](https://github.com/radjaddinar/echo-notifier/blob/main/echologo.png?raw=true)
-#echo-notifier
+
+# ECHO)))
+
 *Your AI agents scream into my void. I ping your phone.*
 
 [![CI](https://github.com/dinarradja/cli-notifier/actions/workflows/ci.yml/badge.svg)](https://github.com/dinarradja/cli-notifier/actions/workflows/ci.yml)
