@@ -1,14 +1,12 @@
 <!-- markdownlint-disable MD041 -->
+![image alt](https://github.com/radjaddinar/echo-notifier/blob/main/echologo.png?raw=true)
+#echo-notifier
+*Your AI agents scream into my void. I ping your phone.*
 
 [![CI](https://github.com/dinarradja/cli-notifier/actions/workflows/ci.yml/badge.svg)](https://github.com/dinarradja/cli-notifier/actions/workflows/ci.yml)
 [![PyPI version](https://img.shields.io/pypi/v/cli-notifier)](https://pypi.org/project/cli-notifier/)
 [![Python versions](https://img.shields.io/pypi/pyversions/cli-notifier)](https://pypi.org/project/cli-notifier/)
 [![License](https://img.shields.io/pypi/l/cli-notifier)](LICENSE)
-
-#echo-notifier
-![image alt](https://github.com/radjaddinar/echo-notifier/blob/main/ECHO-git.png?raw=true)
-
-*Your AI agents scream into my void. I ping your phone.*
 
 Three lines and your AI agent will DM you on Telegram when it's done doing whatever you asked it to do.
 
