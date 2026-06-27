@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/pypi/l/cli-notifier)](LICENSE)
 
 #echo-notifier
-![Uploading ECHO-git.png…]()
+![image alt](https://github.com/radjaddinar/echo-notifier/blob/main/ECHO-git.png?raw=true)
 
 *Your AI agents scream into my void. I ping your phone.*
 
